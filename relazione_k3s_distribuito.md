@@ -6,7 +6,7 @@ Creare un'infrastruttura composta da almeno due macchine virtuali (una master, u
 
 ---
 
-## Preparazione infrastruttura con Terraform (da PC locale - PowerShell)
+## Preparazione infrastruttura con Terraform 
 
 ### 1. Creazione dei file:
 - `main.tf`: definisce l'infrastruttura Azure (VM, subnet, NSG, IP, NIC ecc.)
@@ -14,7 +14,7 @@ Creare un'infrastruttura composta da almeno due macchine virtuali (una master, u
 - `outputs.tf`: stampa gli IP pubblici
 
 ### 2. Comandi eseguiti (da PowerShell nella cartella Terraform):
-```powershell
+```
 terraform init
 terraform plan
 terraform apply
@@ -27,7 +27,7 @@ terraform apply
 ## Accesso via SSH alle VM
 
 ### Comandi da PowerShell:
-```powershell
+```
 ssh -i C:\Users\user\.ssh\id_ed25519 azureuser@<IP_MASTER>
 ssh -i C:\Users\user\.ssh\id_ed25519 azureuser@<IP_AGENT>
 ```
@@ -37,24 +37,24 @@ ssh -i C:\Users\user\.ssh\id_ed25519 azureuser@<IP_AGENT>
 ## Installazione K3s
 
 ### Sulla VM master:
-```bash
+```
 curl -sfL https://get.k3s.io | sh -
 sudo k3s kubectl get node
 ```
 
 ### Recupero token e IP privato:
-```bash
+```
 sudo cat /var/lib/rancher/k3s/server/node-token
 ip a show eth0
 ```
 
 ### Sulla VM agent:
-```bash
+```
 curl -sfL https://get.k3s.io | K3S_URL=https://<IP_PRIVATO_MASTER>:6443 K3S_TOKEN=<TOKEN> sh -
 ```
 
 ### Verifica da VM master:
-```bash
+```
 sudo k3s kubectl get nodes
 ```
 > Il risultato deve mostrare sia master che agent in stato `Ready`
@@ -66,7 +66,7 @@ sudo k3s kubectl get nodes
 ### Sulla VM master:
 
 #### Creazione file `job.yaml`:
-```yaml
+```
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -83,7 +83,7 @@ spec:
       restartPolicy: Never
 ```
 
-```bash
+```
 nano job.yaml
 sudo k3s kubectl apply -f job.yaml
 sudo k3s kubectl get pods -o wide
